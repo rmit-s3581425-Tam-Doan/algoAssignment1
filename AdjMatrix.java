@@ -14,7 +14,7 @@ public class AdjMatrix
 
 	private 	ArrayList<ArrayList<String>> adjacencyMatrix;
 	private ArrayList<String> vertices = new ArrayList<String>();
-	private int count = 0;
+	    
 	/**
 	 * Contructs empty graph.
 	 */
@@ -26,35 +26,32 @@ public class AdjMatrix
     	
     } // end of AdjMatrix()
     
-    
     public void addVertex(String vertLabel) {
         // Implement me!
     	
+    	//ArrayList for the label of the vertex
     vertices.add(vertLabel);
-    adjacencyMatrix.add(new ArrayList<String>());
-    count++;
     
+    //2D ArrayList for the matrix
+    adjacencyMatrix.add(new ArrayList<String>());
+    
+    //Each iteration, adds an extra value to each row.  The nested loop makes sure an extra element is added for the newest row in the iteration.
     for(int i = 0; i < vertices.size(); i++) {
 			
     			adjacencyMatrix.get(i).add("0");
     			
-    				
+    			//Executes only for the element in the last position
     			if(i == vertices.size()-1 ) {
-    				for(int j = 0; j < count-1; j++) {
-    					adjacencyMatrix.get(vertices.size() - 1).add("0");
-    					
-    					
+    				//Executes only if there is more than one vertex
+    				for(int j = 0; j < vertices.size()-1; j++) {
+    					adjacencyMatrix.get(vertices.size() - 1).add("0");		
     				}
-    			}
-    				
+    			}			
     }
-    
-
-    		
-    		 	
+	 	
     } // end of addVertex()
     
-    public void printShit() {
+    public void printMatrix() {
     	
     		for(int i = 0; i < adjacencyMatrix.size(); i++) {
     			for(int j = 0; j < adjacencyMatrix.get(i).size(); j++) {
@@ -64,54 +61,79 @@ public class AdjMatrix
     		}
     		
     }
-	
     
     public void addEdge(String srcLabel, String tarLabel) {
         // Implement me!
     		int vertexPositionA = 0;
     		int vertexPositionB = 0;
     		
-    		for(int i = 0; i < vertices.size(); i++) {
-    			if(srcLabel.equals(vertices.get(i))) {
-    				vertexPositionA = i;
-    			}
-    			if(tarLabel.equals(vertices.get(i))) {
-    				vertexPositionB = i;
-    			}
-    		}
+    		if(vertices.contains(srcLabel))
+    			vertexPositionA = vertices.indexOf(srcLabel);
+    		
+    		if(vertices.contains(tarLabel))
+    			vertexPositionB = vertices.indexOf(tarLabel);
     		
     		adjacencyMatrix.get(vertexPositionA).set(vertexPositionB, "1");
-    		adjacencyMatrix.get(vertexPositionB).set(vertexPositionA, "1");
-    		
-    	
-    		
-    	
-    	
-    	
+    		adjacencyMatrix.get(vertexPositionB).set(vertexPositionA, "1");	
     } // end of addEdge()
 	
 
     public ArrayList<String> neighbours(String vertLabel) {
         ArrayList<String> neighbours = new ArrayList<String>();
+        int vertexPosition = 0;
+        int neighbourPosition = 0;
         
-        // Implement me!
-        
-        
-        
+        // Gets the position of the user inputted vertex from the vertex
+        if(vertices.contains(vertLabel)) {
+        		System.out.print("\n" + vertLabel + " ");
+			vertexPosition = vertices.indexOf(vertLabel);
+			
+		     //Uses the vertex position to check for "1"s in the matrix to find the neighbours
+	        for(int i = 0; i < vertices.size(); i++) {
+	        		if(adjacencyMatrix.get(vertexPosition).get(i).equals("1")) {
+	        			neighbours.add(vertices.get(i));
+	        		}
+	        }
+	        
+        } else {
+        		System.out.print("\nVertex doesn't exist");
+        }
+
         return neighbours;
     } // end of neighbours()
     
     
     public void removeVertex(String vertLabel) {
         // Implement me!
-    	
-    	
-    	
+    		int vertexPosition = 0;
+    		if(vertices.contains(vertLabel)) 
+    			vertexPosition = vertices.indexOf(vertLabel);   
+    		else
+    			System.out.println("Vertex doesn't exist");
+    		
+    		//Removes vertex from the arraylist of labels
+    		vertices.remove(vertexPosition);
+    		
+    		adjacencyMatrix.remove(vertexPosition);
+    		
+    		for(int i = 0; i < vertices.size(); i++) {
+    			adjacencyMatrix.get(i).remove(vertexPosition);
+    		}
     } // end of removeVertex()
 	
     
     public void removeEdge(String srcLabel, String tarLabel) {
         // Implement me!
+    	int vertexPositionA = 0;
+    int vertexPositionB = 0;
+		if(vertices.contains(srcLabel)) 
+			vertexPositionA = vertices.indexOf(srcLabel);  
+		
+		if(vertices.contains(tarLabel)) 
+			vertexPositionB = vertices.indexOf(tarLabel);  
+    	
+    		adjacencyMatrix.get(vertexPositionA).set(vertexPositionB, "0");
+    		adjacencyMatrix.get(vertexPositionB).set(vertexPositionA, "0");
     	
     	
     	
@@ -120,25 +142,84 @@ public class AdjMatrix
     
     public void printVertices(PrintWriter os) {
         // Implement me!
-    	
-    	
-    	
+    		
+	    	for(int i = 0; i < vertices.size(); i++) {
+	    		os.print(vertices.get(i) + " ");
+	    		System.out.print(vertices.get(i));
+	    	}
+	    	System.out.println();
     } // end of printVertices()
 	
     
     public void printEdges(PrintWriter os) {
         // Implement me!
-    	
+    		
+    		for(int i = 0; i < vertices.size(); i++) {
+    			
+    			for(int j = 0; j < vertices.size(); j++) {
+    				if(adjacencyMatrix.get(i).get(j).equals("1")) {
+    				
+    					os.print(vertices.get(i) + " " + vertices.get(j));
+    					System.out.println(vertices.get(i) + " " + vertices.get(j));
+    				}    			
+    			}
+    		}
     	
     	
     } // end of printEdges()
     
+    public int shortestPathDistance(String vertLabel1, String vertLabel2) {
+    	// Implement me!
+	    int 	srcNode = 0;
+	    int destNode = 0;	
+	    //Keeps track of nodes already visited
+	    int[] visited = new int[vertices.size()];
+	    Arrays.fill(visited, 0);
+   
+	    //Keeps track of the current node that is checking its children
+	    ArrayList<Integer> queue = new ArrayList<Integer>();
+	    
+	    //Keeps track of the best distance for each node from src
+	    int[] bestDistance = new int[vertices.size()];
+	    //Initialises as -1 incase the destNode is unreachable it will return -1
+	    Arrays.fill(bestDistance, -1);
+	    
+	    //Error checks and stores position of src and dest nodes
+	    if(vertices.contains(vertLabel1))
+	    		srcNode = vertices.indexOf(vertLabel1);
+	    else
+	    		return -1;
+	    
+	    if(vertices.contains(vertLabel2))
+    			destNode = vertices.indexOf(vertLabel2);
+	    	else
+	    		return -1;
+	    
+	    //adds the source node to the list
+	    queue.add(srcNode);
+	    visited[srcNode] = 1;
+	    //Sets starting node to 0 as its been visited with no distance
+	    bestDistance[srcNode] = 0;
+	    
+	    //Loops until no nodes left to explore
+	    while(!queue.isEmpty()) {
+	    	
+	    	//Checks the currentNodes row if it has any edges.. if so, it adds them to the list
+		    for(int j = 0; j < vertices.size(); j++) {   
+		    		//only unvisited nodes will be added to the list to explore later
+		    		if(adjacencyMatrix.get(queue.get(0)).get(j).equals("1") && visited[j] == 0) {
+		    			visited[j] = 1;
+		    			queue.add(j);
+		    			bestDistance[j] = bestDistance[queue.get(0)] + 1;
+		    		}
+		    }
+		    //removes the head of the list
+		    queue.remove(0);  
+	    }
+	    
+	    return bestDistance[destNode];
+       	
+    } // end of shortestPathDistance()
     
-//    public int shortestPathDistance(String vertLabel1, String vertLabel2) {
-//    	// Implement me!
-//    	
-//        // if we reach this point, source and target are disconnected
-//        return disconnectedDist;    	
-//    } // end of shortestPathDistance()
     
 } // end of class AdjMatrix
