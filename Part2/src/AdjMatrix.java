@@ -52,7 +52,11 @@ public class AdjMatrix <T extends Object>
     
     public int numberOfEdges() {
 		return numbOfEdges;
-}
+    }
+    
+    public ArrayList getVertexList() {
+    		return vertices;
+    }
     
 
 	
@@ -78,14 +82,14 @@ public class AdjMatrix <T extends Object>
     } // end of addEdge()
 	
 
-    public ArrayList<T> neighbours(T vertLabel) {
+    public void neighbours(T vertLabel) {
         ArrayList<T> neighbours = new ArrayList<T>();
         int vertexPosition = 0;
         int neighbourPosition = 0;
         
         // Gets the position of the user inputted vertex from the vertex
         if(vertices.contains(vertLabel)) {
-        		System.out.print("\n" + vertLabel + " ");
+        		//System.out.print("\n" + vertLabel + " ");
 			vertexPosition = vertices.indexOf(vertLabel);
 			
 		     //Uses the vertex position to check for "1"s in the matrix to find the neighbours
@@ -96,9 +100,10 @@ public class AdjMatrix <T extends Object>
 	        }
 	        
         } else {
+        		System.out.print(vertLabel);
         		System.out.print("\nVertex doesn't exist");
         }  
-        return neighbours;
+        
     } // end of neighbours()
     
     
